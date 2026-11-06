@@ -134,7 +134,27 @@ export default function App() {
       return { gps: false, motion: false, sms: false };
     }
   });
-  const [batteryLevel, setBatteryLevel] = useState(88);
+  const [isBatteryApiSupported, setIsBatteryApiSupported] = useState(
+    typeof navigator !== "undefined" && "getBattery" in navigator
+  );
+  const [batteryLevel, setBatteryLevel] = useState(() => {
+    try {
+      const saved = localStorage.getItem("sismalert_device_battery");
+      return saved ? Number(saved) : 80;
+    } catch {
+      return 80;
+    }
+  });
+
+  const handleManualBatteryChange = (val) => {
+    const clamped = Math.max(1, Math.min(100, Math.round(Number(val) || 1)));
+    setBatteryLevel(clamped);
+    try {
+      localStorage.setItem("sismalert_device_battery", String(clamped));
+    } catch {
+      // ignore
+    }
+  };
   const [currentGps, setCurrentGps] = useState({
     lat: 10.4961,
     lng: -66.8532,
@@ -357,16 +377,33 @@ export default function App() {
 
   // Lectura silenciosa del nivel de bateria en segundo plano (para enviarlo cuando pida ayuda)
   useEffect(() => {
-    if (!("getBattery" in navigator)) return;
+    if (!("getBattery" in navigator)) {
+      setIsBatteryApiSupported(false);
+      return;
+    }
+    setIsBatteryApiSupported(true);
     let batObj = null;
     const syncBattery = () => {
-      if (batObj) setBatteryLevel(Math.round(batObj.level * 100));
+      if (batObj) {
+        const pct = Math.round(batObj.level * 100);
+        setBatteryLevel(pct);
+        try {
+          localStorage.setItem("sismalert_device_battery", String(pct));
+        } catch {
+          // ignore
+        }
+      }
     };
-    navigator.getBattery().then((b) => {
-      batObj = b;
-      syncBattery();
-      b.addEventListener("levelchange", syncBattery);
-    });
+    navigator
+      .getBattery()
+      .then((b) => {
+        batObj = b;
+        syncBattery();
+        b.addEventListener("levelchange", syncBattery);
+      })
+      .catch(() => {
+        setIsBatteryApiSupported(false);
+      });
     return () => {
       if (batObj) batObj.removeEventListener("levelchange", syncBattery);
     };
@@ -1873,6 +1910,84 @@ export default function App() {
                         />
                       </div>
 
+                      {!isBatteryApiSupported && (
+                        <div className="field-group" style={{ marginTop: 4 }}>
+                          <label className="field-label">
+                            <span>Nivel de batería del teléfono (iOS / WebKit)</span>
+                            <span
+                              style={{
+                                color: batteryLevel <= 15 ? "#ef4444" : "#10b981",
+                                fontWeight: 700
+                              }}
+                            >
+                              {batteryLevel}% {batteryLevel <= 15 ? "(Batería crítica)" : ""}
+                            </span>
+                          </label>
+                          <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+                            {[
+                              { label: "< 15%", val: 10 },
+                              { label: "25%", val: 25 },
+                              { label: "50%", val: 50 },
+                              { label: "75%", val: 75 },
+                              { label: "100%", val: 100 }
+                            ].map((btn) => (
+                              <button
+                                key={btn.val}
+                                type="button"
+                                onClick={() => handleManualBatteryChange(btn.val)}
+                                style={{
+                                  flex: 1,
+                                  padding: "6px 0",
+                                  fontSize: "0.72rem",
+                                  fontWeight: 600,
+                                  borderRadius: 6,
+                                  border:
+                                    (btn.val === 10 && batteryLevel <= 15) ||
+                                    (btn.val !== 10 && Math.abs(batteryLevel - btn.val) <= 12)
+                                      ? "1px solid #38bdf8"
+                                      : "1px solid rgba(255,255,255,0.12)",
+                                  background:
+                                    (btn.val === 10 && batteryLevel <= 15) ||
+                                    (btn.val !== 10 && Math.abs(batteryLevel - btn.val) <= 12)
+                                      ? "rgba(56, 189, 248, 0.22)"
+                                      : "rgba(255,255,255,0.04)",
+                                  color:
+                                    btn.val === 10 && batteryLevel <= 15
+                                      ? "#ef4444"
+                                      : btn.val !== 10 && Math.abs(batteryLevel - btn.val) <= 12
+                                        ? "#38bdf8"
+                                        : "var(--text-sub)",
+                                  cursor: "pointer"
+                                }}
+                              >
+                                {btn.label}
+                              </button>
+                            ))}
+                          </div>
+                          <input
+                            type="range"
+                            min="1"
+                            max="100"
+                            value={batteryLevel}
+                            onChange={(e) => handleManualBatteryChange(e.target.value)}
+                            style={{
+                              width: "100%",
+                              accentColor: batteryLevel <= 15 ? "#ef4444" : "#10b981"
+                            }}
+                          />
+                          <span
+                            style={{
+                              fontSize: "0.68rem",
+                              color: "var(--text-sub)",
+                              marginTop: 2,
+                              display: "block"
+                            }}
+                          >
+                            Apple WebKit restringe lectura automática por privacidad. Ajusta tu carga real aquí para alertar a los rescatistas.
+                          </span>
+                        </div>
+                      )}
+
                       <div className="field-group" style={{ marginTop: 4 }}>
                         <label className="field-label">
                           <span>Teléfono destino para el SMS de emergencia</span>
@@ -1962,8 +2077,8 @@ export default function App() {
                             </div>
                             <div style={{ background: "rgba(18, 28, 49, 0.9)", padding: 8, borderRadius: 8 }}>
                               <div>Altitud y Batería (RF-01)</div>
-                              <strong style={{ color: "#10b981" }}>
-                                {currentGps.alt || 915} msnm · {batteryLevel}% Bat.
+                              <strong style={{ color: batteryLevel <= 15 ? "#ef4444" : "#10b981" }}>
+                                {currentGps.alt || 915} msnm · {batteryLevel}% {isBatteryApiSupported ? "(Sensor HW)" : "(iOS / Calibrado)"}
                               </strong>
                             </div>
                             <div style={{ background: "rgba(18, 28, 49, 0.9)", padding: 8, borderRadius: 8 }}>
