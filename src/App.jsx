@@ -54,6 +54,7 @@ import {
   geocodeAddressToCoordinates,
   matchCaracasSectorFromText
 } from "./services/gpsAddressService";
+import LiveGpsMapPicker from "./components/LiveGpsMapPicker";
 
 const currentHost = typeof window !== "undefined" ? window.location.hostname : "localhost";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || `http://${currentHost}:4000`;
@@ -773,13 +774,38 @@ export default function App() {
             nombreCompleto: plainRecord.nombreCompleto,
             cedula: plainRecord.cedula,
             telefono: citizenProfile?.telefono || telefono || "",
-            direccion: citizenProfile?.direccion || direccion || "",
+            direccion: direccion.trim() || citizenProfile?.direccion || "",
+            coordenadas: {
+              lat: currentGps.lat,
+              lng: currentGps.lng,
+              alt: currentGps.alt || 915
+            },
+            cuadrante: currentGps.quadrant,
             fichaMedicaCompletada: true,
             tipoSangreResumen: tipoSangre,
             updatedAt: new Date().toISOString()
           },
           { merge: true }
         );
+
+        // Si el usuario ya tenia una alerta activa, sincronizar su ubicacion actualizada en el mapa
+        if (hasActiveSosReport) {
+          await setDoc(
+            doc(db, "alerts", firebaseUser.uid),
+            {
+              direccion: direccion.trim() || citizenProfile?.direccion || "",
+              coordenadas: {
+                lat: currentGps.lat,
+                lng: currentGps.lng,
+                alt: currentGps.alt || 915
+              },
+              cuadrante: currentGps.quadrant?.code || "C-01",
+              zonaNombre: currentGps.quadrant?.name || "Caracas",
+              updatedAt: new Date().toISOString()
+            },
+            { merge: true }
+          );
+        }
       } catch (firestoreErr) {
         console.warn("Aviso guardando en Firestore:", firestoreErr);
       }
@@ -1269,7 +1295,7 @@ export default function App() {
 
                   <div className="field-group">
                     <div className="field-label">
-                      <span>Dirección</span>
+                      <span>Dirección y Mapa GPS en Vivo</span>
                       <button
                         type="button"
                         className="btn-link"
@@ -1282,9 +1308,29 @@ export default function App() {
                     <textarea
                       required
                       className="field-textarea"
-                      placeholder="Toca 'Usar ubicación del GPS' o escribe tu dirección..."
+                      placeholder="Toca 'Detectar mi ubicación GPS exacta' en el mapa o escribe tu dirección..."
                       value={direccion}
                       onChange={(e) => setDireccion(e.target.value)}
+                    />
+                    <LiveGpsMapPicker
+                      lat={gpsCoordsRegistro?.lat || currentGps.lat}
+                      lng={gpsCoordsRegistro?.lng || currentGps.lng}
+                      height={200}
+                      onLocationChange={(loc) => {
+                        setDireccion(loc.address);
+                        setGpsCoordsRegistro({
+                          lat: loc.lat,
+                          lng: loc.lng,
+                          alt: loc.alt || 920,
+                          quadrant: loc.quadrant
+                        });
+                        setCurrentGps({
+                          lat: loc.lat,
+                          lng: loc.lng,
+                          alt: loc.alt || 920,
+                          quadrant: loc.quadrant
+                        });
+                      }}
                     />
                   </div>
 
@@ -1479,7 +1525,7 @@ export default function App() {
 
                   <div className="field-group">
                     <div className="field-label">
-                      <span>Dirección</span>
+                      <span>Dirección y Mapa GPS en Vivo</span>
                       <button
                         type="button"
                         className="btn-link"
@@ -1492,9 +1538,29 @@ export default function App() {
                     <textarea
                       required
                       className="field-textarea"
-                      placeholder="Toca 'Usar ubicación del GPS' o escribe tu dirección..."
+                      placeholder="Toca 'Detectar mi ubicación GPS exacta' en el mapa o escribe tu dirección..."
                       value={direccion}
                       onChange={(e) => setDireccion(e.target.value)}
+                    />
+                    <LiveGpsMapPicker
+                      lat={gpsCoordsRegistro?.lat || currentGps.lat}
+                      lng={gpsCoordsRegistro?.lng || currentGps.lng}
+                      height={200}
+                      onLocationChange={(loc) => {
+                        setDireccion(loc.address);
+                        setGpsCoordsRegistro({
+                          lat: loc.lat,
+                          lng: loc.lng,
+                          alt: loc.alt || 920,
+                          quadrant: loc.quadrant
+                        });
+                        setCurrentGps({
+                          lat: loc.lat,
+                          lng: loc.lng,
+                          alt: loc.alt || 920,
+                          quadrant: loc.quadrant
+                        });
+                      }}
                     />
                   </div>
 
@@ -1694,6 +1760,40 @@ export default function App() {
                               onChange={(e) => setContactoEmergenciaTelefono(e.target.value)}
                             />
                           </div>
+                        </div>
+
+                        {/* MAPA INTERACTIVO EN VIVO EN LA FICHA MEDICA PARA AJUSTAR O DETECTAR UBICACION GPS */}
+                        <div className="field-group">
+                          <label className="field-label">
+                            <span>Tu dirección y punto exacto en el mapa</span>
+                          </label>
+                          <input
+                            type="text"
+                            className="field-input"
+                            placeholder="Tu dirección actual..."
+                            value={direccion}
+                            onChange={(e) => setDireccion(e.target.value)}
+                          />
+                          <LiveGpsMapPicker
+                            lat={currentGps.lat}
+                            lng={currentGps.lng}
+                            height={210}
+                            onLocationChange={(loc) => {
+                              setDireccion(loc.address);
+                              setCurrentGps({
+                                lat: loc.lat,
+                                lng: loc.lng,
+                                alt: loc.alt || 920,
+                                quadrant: loc.quadrant
+                              });
+                              const nextPerms = { ...permissions, gps: true };
+                              setPermissions(nextPerms);
+                              localStorage.setItem(
+                                "sismalert_device_permissions",
+                                JSON.stringify(nextPerms)
+                              );
+                            }}
+                          />
                         </div>
 
                         <button type="submit" className="btn-primary" disabled={savingMedical}>
