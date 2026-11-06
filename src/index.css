@@ -1,0 +1,682 @@
+:root {
+  --bg-deep: #070b14;
+  --bg-surface: #0d1424;
+  --bg-card: #121c31;
+  --bg-input: #090f1d;
+  --border-soft: rgba(148, 163, 184, 0.14);
+  --border-focus: rgba(56, 189, 248, 0.55);
+
+  --primary: #0ea5e9;
+  --primary-dark: #0284c7;
+  --crimson: #ef4444;
+  --crimson-dark: #dc2626;
+  --emerald: #10b981;
+  --amber: #f59e0b;
+
+  --text-main: #f8fafc;
+  --text-sub: #94a3b8;
+  --text-muted: #64748b;
+
+  --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  background-color: var(--bg-deep);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-image:
+    radial-gradient(circle at 50% -10%, rgba(14, 165, 233, 0.14) 0%, transparent 55%),
+    radial-gradient(circle at 50% 105%, rgba(16, 185, 129, 0.08) 0%, transparent 45%);
+}
+
+.mobile-viewport-wrapper {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.mobile-device-shell {
+  width: 100%;
+  max-width: 440px;
+  min-height: 100dvh;
+  background: var(--bg-surface);
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.65);
+}
+
+/* Banner de Descargar App en el Telefono */
+.pwa-install-banner {
+  background: linear-gradient(90deg, rgba(14, 165, 233, 0.16) 0%, rgba(16, 185, 129, 0.14) 100%);
+  border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 16px 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pwa-install-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.pwa-icon-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(14, 165, 233, 0.18);
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pwa-install-title {
+  font-family: var(--font-display);
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.pwa-install-subtitle {
+  font-size: 0.74rem;
+  color: var(--text-sub);
+  margin-top: 1px;
+}
+
+.btn-install-app {
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.btn-install-app:active {
+  transform: scale(0.97);
+}
+
+/* Cabecera Limpia con Boton de Volver */
+.app-header {
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(13, 20, 36, 0.88);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  backdrop-filter: blur(14px);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-back-nav {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-soft);
+  color: var(--text-main);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.btn-back-nav:hover {
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.btn-back-nav:active {
+  transform: scale(0.95);
+}
+
+.brand-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+}
+
+.brand-title {
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+}
+
+.brand-subtitle {
+  font-size: 0.73rem;
+  color: var(--text-sub);
+}
+
+.btn-logout {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-soft);
+  color: var(--text-sub);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 0.76rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Contenido Principal */
+.app-main {
+  flex: 1;
+  padding: 20px 18px 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Barra de volver contextual dentro de vistas */
+.back-row-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--text-sub);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-bottom: 4px;
+  width: fit-content;
+}
+
+.back-row-inline:hover {
+  color: var(--text-main);
+}
+
+/* Tarjetas Suaves y Modernas */
+.surface-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 20px;
+  padding: 22px 20px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 1.32rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.25;
+}
+
+.card-subtitle {
+  font-size: 0.87rem;
+  color: var(--text-sub);
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+/* Formularios */
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.field-input,
+.field-textarea {
+  width: 100%;
+  min-height: 48px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.field-textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
+.field-input:focus,
+.field-textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.16);
+}
+
+/* Botones Principales y de Google */
+.btn-primary {
+  width: 100%;
+  min-height: 50px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: #ffffff;
+  border: none;
+  border-radius: 13px;
+  padding: 13px 18px;
+  font-family: var(--font-sans);
+  font-size: 0.94rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.25);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-google {
+  width: 100%;
+  min-height: 50px;
+  background: #ffffff;
+  color: #1e293b;
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
+  padding: 12px 18px;
+  font-family: var(--font-sans);
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.btn-google:hover {
+  background: #f8fafc;
+}
+
+.btn-google:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  width: 100%;
+  min-height: 48px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  padding: 11px 16px;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #38bdf8;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 2px;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+.divider-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.divider-line::before,
+.divider-line::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border-soft);
+}
+
+/* Selector de Tipo de Sangre */
+.blood-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.blood-pill {
+  min-height: 46px;
+  border-radius: 11px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-soft);
+  color: var(--text-sub);
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.blood-pill.active {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: var(--crimson);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.25);
+}
+
+/* Permisos de la App */
+.permission-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.permission-item {
+  background: var(--bg-input);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  padding: 13px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.permission-item.granted {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.06);
+}
+
+.permission-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.permission-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(14, 165, 233, 0.12);
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.permission-item.granted .permission-icon {
+  background: rgba(16, 185, 129, 0.16);
+  color: var(--emerald);
+}
+
+.permission-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.permission-detail {
+  font-size: 0.75rem;
+  color: var(--text-sub);
+  margin-top: 2px;
+}
+
+.btn-permission-toggle {
+  min-height: 38px;
+  padding: 7px 13px;
+  border-radius: 9px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  background: rgba(14, 165, 233, 0.12);
+  color: #38bdf8;
+  white-space: nowrap;
+}
+
+.btn-permission-toggle.granted {
+  border-color: rgba(16, 185, 129, 0.45);
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+/* Estado de Proteccion Activa y Boton SOS */
+.protection-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+  font-size: 0.76rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.sos-core-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 10px 16px;
+}
+
+.sos-outer-ring {
+  width: 192px;
+  height: 192px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sos-trigger-button {
+  width: 158px;
+  height: 158px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f87171 0%, #ef4444 55%, #b91c1c 100%);
+  border: 4px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  cursor: pointer;
+  box-shadow: 0 12px 36px rgba(239, 68, 68, 0.45);
+  transition: transform 0.15s ease;
+}
+
+.sos-trigger-button:active {
+  transform: scale(0.95);
+}
+
+.sos-trigger-title {
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 700;
+}
+
+.sos-trigger-sub {
+  font-size: 0.72rem;
+  font-weight: 600;
+  opacity: 0.92;
+}
+
+/* Barra de Navegacion Inferior */
+.bottom-nav-bar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-width: 440px;
+  background: rgba(13, 20, 36, 0.95);
+  border-top: 1px solid var(--border-soft);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  padding: 8px 14px calc(8px + env(safe-area-inset-bottom));
+  z-index: 40;
+  backdrop-filter: blur(16px);
+}
+
+.nav-tab-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px 6px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.74rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.nav-tab-btn.active {
+  color: #38bdf8;
+  background: rgba(14, 165, 233, 0.1);
+}
+
+/* Avisos */
+.alert-banner {
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.alert-banner.error {
+  background: rgba(239, 68, 68, 0.14);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fecaca;
+}
+
+.alert-banner.success {
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #a7f3d0;
+}
+
+.alert-banner.info {
+  background: rgba(14, 165, 233, 0.14);
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  color: #bae6fd;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.8);
+  backdrop-filter: blur(6px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+}
